@@ -1,4 +1,7 @@
+import './shoelace-components';
 import './styles.scss';
+
+
 
 let isWorldSaved: boolean = false;
 
@@ -10,5 +13,6 @@ export function saveTheWorld(): string {
     return `Hurray, you just saved the world`;
   }
 }
+
 
 saveTheWorld();

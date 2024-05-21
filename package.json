@@ -1,5 +1,6 @@
 {
   "devDependencies": {
+    "copy-webpack-plugin": "^12.0.2",
     "css-loader": "^7.1.1",
     "html-webpack-plugin": "^5.6.0",
     "mini-css-extract-plugin": "^2.9.0",
@@ -20,6 +21,7 @@
   "description": "application that takes an image and creates logo file for Carpuride Carplay/AAuto displays",
   "private": true,
   "dependencies": {
+    "@shoelace-style/shoelace": "^2.15.1",
     "lodash": "^4.17.21"
   },
   "scripts": {
