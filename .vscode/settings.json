@@ -1,3 +1,4 @@
 {
-    "liveServer.settings.root": "./dist"
+    "liveServer.settings.root": "./dist",
+    "html.customData": ["./node_modules/@shoelace-style/shoelace/dist/vscode.html-custom-data.json"]
 }

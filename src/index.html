@@ -1,12 +1,51 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <title><%= htmlWebpackPlugin.options.title %></title>
-  </head>
-  <body>
-    <h1>Logo generator XD</h1>
+<html class="sl-theme-dark">
 
-    <sl-button>XD</sl-button>
-  </body>
+<head>
+  <meta charset="utf-8" />
+  <title>
+    <%= htmlWebpackPlugin.options.title %>
+  </title>
+  <link rel="preconnect" href="https://plausible.dszymanski.pl">
+</head>
+
+<body>
+  <div class="container">
+    <div class="settings-form">
+      <sl-select id="model-select" label="Select model">
+        <sl-option value="w502">W502</sl-option>
+        <sl-option value="w70x">W701/W702/W706/W707/W708</sl-option>
+        <sl-option value="w901">W901</sl-option>
+        <sl-option value="w103">W103</sl-option>
+      </sl-select>
+      <sl-input disabled="" id="file-upload" label="Upload file" type="file"></sl-input>
+      <sl-alert open>
+        <sl-icon slot="icon" name="info-circle"></sl-icon>
+        Glowing box is your display boundary.<br>
+        The process is a bit memory intensive. If it hangs, try restarting your browser to free some resources.
+      </sl-alert>
+      <sl-alert id="size-mismatch-alert" variant="warning" closed>
+        <sl-icon slot="icon" name="exclamation-triangle"></sl-icon>
+        <strong>Your image size doesn't match display size.</strong><br>
+        Weird stuff might happen.<br>
+        It would be best if you could provide <strong id="recommended-width">x</strong> by <strong id="recommended-height">x</strong> px image.
+      </sl-alert>
+    </div>
+    <div class="canvas-container">
+      <canvas id="bootlogo"></canvas>
+    </div>
+    <div class="actions-container">
+      <sl-button disabled="" id="download-button"><sl-icon slot="prefix" name="download"></sl-icon>Download boot logo</sl-button>
+    </div>
+    <div class="footer">
+      Created by <a href="https://szymanski.io/">Dominik Szymański</a>, domints, <a href="https://github.com/domints">GitHub</a>, <a href="https://www.linkedin.com/in/dominik-szyma%C5%84ski-228152122/">LinkedIn</a>. For source code click <a href="https://github.com/domints/CarpurideLogoGenerator">here</a>.
+    </div>
+  </div>
+  <sl-dialog label="No warranty" class="dialog-overview" id="no-warranty-dialog">
+    The software you see is provided AS IS. That means, while I've done my best to ensure it's working properly, I cannot guarantee anything, not even that resulting file will work properly on your device (especially when you've chosen wrong device!).
+    I am not taking any responsibility in case something bad happens (although I've done all I could to avoid it).
+    <sl-button slot="footer" id="no-warranty-dialog-close" variant="primary">I understood</sl-button>
+  </sl-dialog>
+</body>
+
 </html>

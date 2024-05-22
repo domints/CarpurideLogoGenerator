@@ -1,0 +1,11 @@
+@import 'styles/form';
+@import 'styles/canvas';
+@import 'styles/footer';
+
+.d-none {
+    display: none;
+}
+
+body {
+    font-family: var(--sl-font-sans);
+}
