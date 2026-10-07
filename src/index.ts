@@ -43,6 +43,7 @@ interface IResolution {
 
 var resolutions: { [device: string]: IResolution } = {
   "w502": { w: 800, h: 480 },
+  "w602": { w: 1080, h: 540 },
   "w70x": { w: 1024, h: 600 },
   "w901": { w: 1024, h: 600 },
   "w103": { w: 1280, h: 480 }
