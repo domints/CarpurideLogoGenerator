@@ -177,6 +177,13 @@ var updateCanvasSize = () => {
   let ctx = canvas.getContext('2d');
   ctx.fillStyle = '#000';
   ctx.fillRect(0, 0, width, height)
+
+  let text = `${res.w} x ${res.h}`;
+  ctx.fillStyle = '#666';
+  ctx.font = 'bold 48px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(text, canvas.width / 2, canvas.height / 2);
 }
 
 var checkImageSize = () => {
@@ -516,10 +523,6 @@ modelSelect.addEventListener("sl-change", event => {
     ctx.fillStyle = "#000";
     ctx.fillRect(0, 0, width, height);
     ctx.drawImage(currImage, 0, 0);
-  }
-  else {
-    ctx.fillStyle = "#000";
-    ctx.fillRect(0, 0, width, height);
   }
   imageUploader.disabled = false;
   binFileInfoAlert.hide();
