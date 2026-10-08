@@ -92,12 +92,9 @@ interface IResolution {
 
 var resolutions: { [device: string]: IResolution } = {
   "w502": { w: 800, h: 480 },
-<<<<<<< Updated upstream
   "w602": { w: 1080, h: 540 },
-=======
   "w603": { w: 1560, h: 720, method: RenderMethod._603Jpeg },
   "w619": { w: 1280, h: 480 },
->>>>>>> Stashed changes
   "w70x": { w: 1024, h: 600 },
   "w702": { w: 1024, h: 600 },
   "w712": { w: 1024, h: 600, unsupported: true },
@@ -109,7 +106,7 @@ var resolutions: { [device: string]: IResolution } = {
   "other": { w: 0, h: 0, unsupported: true }
 }
 
-var currImage: HTMLImageElement = null;
+var currImage: HTMLImageElement | null = null;
 var currFileName: string = '';
 var currDevice: string = '';
 var currMethod: RenderMethod = RenderMethod._702Part;

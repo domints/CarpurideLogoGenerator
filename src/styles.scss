@@ -1,6 +1,6 @@
-@import 'styles/form';
-@import 'styles/canvas';
-@import 'styles/footer';
+@use 'styles/form' as *;
+@use 'styles/canvas' as *;
+@use 'styles/footer' as *;
 
 .d-none {
     display: none;
