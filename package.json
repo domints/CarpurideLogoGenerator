@@ -1,5 +1,6 @@
 {
   "devDependencies": {
+    "@types/crypto-js": "^4.2.2",
     "copy-webpack-plugin": "^12.0.2",
     "css-loader": "^7.1.1",
     "html-webpack-plugin": "^5.6.0",
@@ -22,6 +23,8 @@
   "private": true,
   "dependencies": {
     "@shoelace-style/shoelace": "^2.15.1",
+    "crypto-js": "^4.2.0",
+    "piexif-ts": "^2.1.0",
     "plausible-tracker": "^0.3.8"
   },
   "scripts": {

@@ -3,4 +3,8 @@
     grid-template-columns: 1fr 1fr;
     column-gap: 1rem;
     row-gap: 0.8rem;
+
+    sl-alert::part(base) {
+        grid-column: 1 / span 2;
+    }
 }
