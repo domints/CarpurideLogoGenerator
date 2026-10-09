@@ -1,7 +1,7 @@
-import './shoelace-components';
+import './shoelace-components.mjs';
 import './styles.scss';
 
-import { LogoPartitionName, Partition, PartitionDefSize, PartitionNameMaxSize } from './tools';
+import { LogoPartitionName, Partition, PartitionDefSize, PartitionNameMaxSize } from './tools.mjs';
 
 import SlAlert from '@shoelace-style/shoelace/dist/components/alert/alert.js';
 import SlButton from '@shoelace-style/shoelace/dist/components/button/button.js';
@@ -10,11 +10,15 @@ import SlInput from '@shoelace-style/shoelace/dist/components/input/input.js';
 import SlSelect from '@shoelace-style/shoelace/dist/components/select/select.js';
 
 import * as piexif from 'piexif-ts';
-import * as ImageIFD from 'piexif-ts/dist'
+//import * as ImageIFD from 'piexif-ts/dist'
 
-import * as MD5 from 'crypto-js/md5';
+import { md5 } from 'pure-md5';
 
-import Plausible, { EventOptions, PlausibleOptions } from "plausible-tracker";
+//import * as Plausible, { EventOptions, PlausibleOptions } from "plausible-tracker";
+import PlausibleModule from 'plausible-tracker';
+
+// @ts-ignore – jeśli TS nadal krzyczy, ale podgląd kodu pokazuje, że 'default' tam jest
+const Plausible = (PlausibleModule as any).default || PlausibleModule;
 var plausible = Plausible({
   domain: 'carpu.dszymanski.pl',
   apiHost: 'https://plausible.dszymanski.pl'
@@ -110,33 +114,33 @@ var currImage: HTMLImageElement | null = null;
 var currFileName: string = '';
 var currDevice: string = '';
 var currMethod: RenderMethod = RenderMethod._702Part;
-var canvas = <HTMLCanvasElement>document.getElementById("bootlogo");
+var canvas = document.getElementById("bootlogo") as HTMLCanvasElement;
 var currimghash = '';
 var currMeta: LogoMeta | null = null;
 
-var ctr = document.getElementById("ctr");
-var modelSelect = document.getElementById("model-select");
-var imageUploader = <SlInput>document.getElementById("file-upload");
-var downloadButton = <SlButton>document.getElementById("download-button");
-var baseHelpAlert = <SlAlert>document.getElementById("base-help-alert");
-var sizeMismatchAlert = <SlAlert>document.getElementById("size-mismatch-alert");
-var invalidFileAlert = <SlAlert>document.getElementById("invalid-file-alert");
-var binFileInfoAlert = <SlAlert>document.getElementById("bin-file-info");
-var unsupportedDeviceAlert = <SlAlert>document.getElementById("unsupported-device-alert");
-var unknownMeta = <SlAlert>document.getElementById("unknown-meta");
-var knownMeta = <SlAlert>document.getElementById("known-meta");
-var noWarrantyDialog = <SlDialog>document.getElementById("no-warranty-dialog");
-var noWarrantyDialogClose = <SlButton>document.getElementById("no-warranty-dialog-close");
-var noWarrantyDialogOpen = document.getElementById("show-warranty-popup");
-var recommendedWidth = document.getElementById("recommended-width");
-var recommendedHeight = document.getElementById("recommended-height");
-var binWidth = document.getElementById("bin-width");
-var binHeight = document.getElementById("bin-height");
-var binMagic = document.getElementById("bin-magic");
-var okForDevice = document.getElementById("ok-for-device");
-var wrongForDevice = document.getElementById("wrong-for-device");
-var canvasContainer = document.getElementById("canvas-container");
-var actionsContainer = document.getElementById("actions-container");
+var ctr = document.getElementById("ctr")!;
+var modelSelect = document.getElementById("model-select")!;
+var imageUploader = document.getElementById("file-upload") as unknown as SlInput;
+var downloadButton = document.getElementById("download-button") as SlButton;
+var baseHelpAlert = document.getElementById("base-help-alert") as SlAlert;
+var sizeMismatchAlert = document.getElementById("size-mismatch-alert") as SlAlert;
+var invalidFileAlert = document.getElementById("invalid-file-alert") as SlAlert;
+var binFileInfoAlert = document.getElementById("bin-file-info") as SlAlert;
+var unsupportedDeviceAlert = document.getElementById("unsupported-device-alert") as SlAlert;
+var unknownMeta = document.getElementById("unknown-meta") as SlAlert;
+var knownMeta = document.getElementById("known-meta") as SlAlert;
+var noWarrantyDialog = document.getElementById("no-warranty-dialog") as SlDialog;
+var noWarrantyDialogClose = document.getElementById("no-warranty-dialog-close") as SlButton;
+var noWarrantyDialogOpen = document.getElementById("show-warranty-popup")!;
+var recommendedWidth = document.getElementById("recommended-width")!;
+var recommendedHeight = document.getElementById("recommended-height")!;
+var binWidth = document.getElementById("bin-width")!;
+var binHeight = document.getElementById("bin-height")!;
+var binMagic = document.getElementById("bin-magic")!;
+var okForDevice = document.getElementById("ok-for-device")!;
+var wrongForDevice = document.getElementById("wrong-for-device")!;
+var canvasContainer = document.getElementById("canvas-container")!;
+var actionsContainer = document.getElementById("actions-container")!;
 
 const addString = (data: number[], value: string) => {
   const encoder = new TextEncoder();
@@ -152,30 +156,22 @@ const addString = (data: number[], value: string) => {
 const generate702MetaBitstream = (meta: LogoMeta): Uint8Array => {
   let result: number[] = [];
   result.push(meta.version);
-  addString(result, meta.magic);
-  result.push(meta.day);
-  result.push(meta.month);
-  result.push(meta.year >> 8);
-  result.push(meta.year & 0xFF);
-  result.push(meta.hour);
-  result.push(meta.minute);
-  addString(result, meta.uuid);
+  addString(result, meta.magic ?? '');
+  result.push(meta.day ?? 0);
+  result.push(meta.month ?? 0);
+  result.push((meta.year ?? 0) >> 8);
+  result.push((meta.year ?? 0) & 0xFF);
+  result.push(meta.hour ?? 21);
+  result.push(meta.minute ?? 37);
+  addString(result, meta.uuid ?? '');
   return new Uint8Array(result);
 }
 
-var updateCanvasSize = () => {
-  let res = resolutions[currDevice];
-  if (!res)
-    return;
-  let width = res.w;
-  let height = res.h;
-  canvas.width = width;
-  canvas.height = height;
-  let ctx = canvas.getContext('2d');
+var clearCanvas = (ctx: CanvasRenderingContext2D, width: number, height: number) => {
   ctx.fillStyle = '#000';
   ctx.fillRect(0, 0, width, height)
 
-  let text = `${res.w} x ${res.h}`;
+  let text = `${width} x ${height}`;
   ctx.fillStyle = '#666';
   ctx.font = 'bold 48px sans-serif';
   ctx.textAlign = 'center';
@@ -183,7 +179,21 @@ var updateCanvasSize = () => {
   ctx.fillText(text, canvas.width / 2, canvas.height / 2);
 }
 
+var updateCanvasSize = () => {
+  let res = resolutions[currDevice];
+  if (!res)
+    return;
+  canvas.width = res.w;
+  canvas.height = res.h;
+  let ctx = canvas.getContext('2d');
+  if (!ctx)
+    return;
+  clearCanvas(ctx, res.w, res.h);
+}
+
 var checkImageSize = () => {
+  if (!currImage)
+    return;
   if (currImage.width != canvas.width || currImage.height != canvas.height) {
     recommendedWidth.innerHTML = canvas.width.toString();
     recommendedHeight.innerHTML = canvas.height.toString();
@@ -201,13 +211,15 @@ var loadImageToCanvas = (file: File) => {
   let fileReader = new FileReader();
   fileReader.onload = e => {
     var img = new Image();
-    currimghash = MD5(<string>e.target.result).toString();
-    img.src = <string>e.target.result;
+    if (e.target == null)
+      return;
+    currimghash = md5(e.target.result as string).toString();
+    img.src = e.target.result as string;
     img.onload = () => {
       currImage = img;
       plausible.trackEvent("imageLoaded", { props: { fileName: file.name, device: currDevice, width: canvas.width, uploadWidth: img.width, height: canvas.height, uploadHeight: img.height } });
       checkImageSize();
-      canvas.getContext("2d").drawImage(img, 0, 0);
+      canvas.getContext("2d")!.drawImage(img, 0, 0);
       downloadButton.disabled = false;
     };
   };
@@ -232,7 +244,7 @@ const refreshMetaDisplay = () => {
 var readBootImage = (file: File) => {
   let fileReader = new FileReader();
   fileReader.onload = e => {
-    let bfr = new Uint8Array(<ArrayBuffer>e.target.result);
+    let bfr = new Uint8Array(e.target!.result as ArrayBuffer);
     if (readString(bfr, 0, 4) != 'PART') {
       invalidFileAlert.show();
       return;
@@ -261,7 +273,7 @@ var readBootImage = (file: File) => {
     let imgOffset = logoPartition.offset + 0x20;
     canvas.width = width;
     canvas.height = height;
-    let ctx = canvas.getContext('2d');
+    let ctx = canvas.getContext('2d')!;
     ctx.fillStyle = '#000';
     ctx.fillRect(0, 0, width, height);
     let data = new ImageData(width, height);
@@ -362,7 +374,7 @@ var generate702BootImage = () => {
   writeUint32(bfr, 0x40, canvas.height);
   writeUint32(bfr, 0x44, 0x000E0003);
   let imgindex = 0x50;
-  let ctx = canvas.getContext("2d");
+  let ctx = canvas.getContext("2d")!;
   let pxOffset = 0;
   debugger;
   for (let y = 0; y < canvas.height; y++) {
@@ -411,7 +423,7 @@ var generate603JpegImage = () => {
 
   plausible.trackEvent("downloadingBootlogo", { props: { width: canvas.width, height: canvas.height, fileName: currFileName, fileHash: currimghash, device: currDevice, sid: sid, dlCount: ncnt } });
   //let url = canvas.toDataURL("image/jpeg", 80);
-  let ctx = canvas.getContext("2d");
+  let ctx = canvas.getContext("2d")!;
   let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
   let m = {
     'quality': 80,              // quality desired
@@ -461,7 +473,7 @@ var writeUint32 = (bfr: Uint8Array, index: number, value: number) => {
 
 
 var downloadBlob = function (data: Uint8Array, fileName: string, mimeType: string) {
-  var blob = new Blob([data], {
+  var blob = new Blob([data as Uint8Array<ArrayBuffer>], {
     type: mimeType
   });
   var url = window.URL.createObjectURL(blob);
@@ -472,7 +484,7 @@ var downloadBlob = function (data: Uint8Array, fileName: string, mimeType: strin
 };
 
 var downloadURL = function (data: string, fileName: string) {
-  var a = <HTMLAnchorElement>document.createElement('a');
+  var a = document.createElement('a') as HTMLAnchorElement;
   a.href = data;
   a.download = fileName;
   document.body.appendChild(a);
@@ -482,7 +494,7 @@ var downloadURL = function (data: string, fileName: string) {
 };
 
 modelSelect.addEventListener("sl-change", event => {
-  let val = <string>(event.target as SlSelect).value;
+  let val = (event.target as SlSelect).value as string;
   currDevice = val;
   updateCanvasSize();
   let res = resolutions[val];
@@ -512,18 +524,19 @@ modelSelect.addEventListener("sl-change", event => {
     currMethod = RenderMethod._702Part;
   }
 
-  let width = res.w;
-  let height = res.h;
-  let ctx = canvas.getContext("2d");
+  let ctx = canvas.getContext("2d")!;
   if (currImage) {
     checkImageSize();
     ctx.fillStyle = "#000";
-    ctx.fillRect(0, 0, width, height);
+    ctx.fillRect(0, 0, res.w, res.h);
     ctx.drawImage(currImage, 0, 0);
+  }
+  else {
+    clearCanvas(ctx, res.w, res.h);
   }
   imageUploader.disabled = false;
   binFileInfoAlert.hide();
-  plausible.trackEvent("modelSelected", { props: { resolution: `${width}x${height}`, device: val, sid: sid } });
+  plausible.trackEvent("modelSelected", { props: { resolution: `${res.w}x${res.h}`, device: val, sid: sid } });
 });
 
 imageUploader.addEventListener("sl-change", event => {
@@ -542,27 +555,27 @@ imageUploader.addEventListener("sl-change", event => {
   }
 });
 
-document.getElementById("szymanskiio-link").addEventListener("click", _ => {
+document.getElementById("szymanskiio-link")!.addEventListener("click", _ => {
   plausible.trackEvent("linkClicked", { props: { linkTarget: "szymanski.io" } });
 })
 
-document.getElementById("coffee-link").addEventListener("click", _ => {
+document.getElementById("coffee-link")!.addEventListener("click", _ => {
   plausible.trackEvent("linkClicked", { props: { linkTarget: "buymecoffee" } });
 })
 
-document.getElementById("coffee-link-unsupported").addEventListener("click", _ => {
+document.getElementById("coffee-link-unsupported")!.addEventListener("click", _ => {
   plausible.trackEvent("linkClicked", { props: { linkTarget: "buymecoffee-unsupported", device: currDevice } });
 })
 
-document.getElementById("github-link").addEventListener("click", _ => {
+document.getElementById("github-link")!.addEventListener("click", _ => {
   plausible.trackEvent("linkClicked", { props: { linkTarget: "github" } });
 })
 
-document.getElementById("linkedIn-link").addEventListener("click", _ => {
+document.getElementById("linkedIn-link")!.addEventListener("click", _ => {
   plausible.trackEvent("linkClicked", { props: { linkTarget: "linkedin" } });
 })
 
-document.getElementById("github-repo-link").addEventListener("click", _ => {
+document.getElementById("github-repo-link")!.addEventListener("click", _ => {
   plausible.trackEvent("linkClicked", { props: { linkTarget: "github repo" } });
 })
 

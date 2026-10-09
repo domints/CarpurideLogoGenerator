@@ -4,7 +4,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 
 module.exports = {
-    entry: './src/index.ts',
+    entry: './src/index.mts',
     devServer: {
         static: './dist',
     },
@@ -33,26 +33,34 @@ module.exports = {
     ],
     module: {
         rules: [{
-                test: /\.tsx?$/,
-                use: 'ts-loader',
-                exclude: /node_modules/,
-            },
-            {
-                test: /\.(s(a|c)ss)$/,
-                use: [MiniCssExtractPlugin.loader,
-                    "css-loader",
-                    "postcss-loader",
-                    "sass-loader",
-                ]
-            },
-            {
-                test: /\.css$/i,
-                use: [MiniCssExtractPlugin.loader, 'css-loader']
-            },
+            test: /\.m?tsx?$/,
+            use: 'ts-loader',
+            exclude: /node_modules/,
+        },
+        {
+            test: /\.(s(a|c)ss)$/,
+            use: [MiniCssExtractPlugin.loader,
+                "css-loader",
+                "postcss-loader",
+                {
+                    loader: 'sass-loader',
+                    options: {
+                        api: 'modern-compiler', // Przełącza na nowoczesne API Sass
+                    },
+                },
+            ]
+        },
+        {
+            test: /\.css$/i,
+            use: [MiniCssExtractPlugin.loader, 'css-loader']
+        },
         ],
     },
     resolve: {
-        extensions: ['.tsx', '.ts', '.js'],
+        extensions: ['.mts', '.tsx', '.ts', '.mjs', '.js'],
+        extensionAlias: {
+            '.mjs': ['.mts', '.mjs'],
+        },
     },
     output: {
         filename: 'main.js',

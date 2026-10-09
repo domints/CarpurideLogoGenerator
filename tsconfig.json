@@ -1,12 +1,18 @@
 {
   "compilerOptions": {
+    "rootDir": ".",
     "outDir": "./dist/",
     "noImplicitAny": true,
-    "module": "es6",
-    "target": "es5",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "noEmit": false,
+    "target": "ES2022",
     "jsx": "react",
     "allowJs": true,
-    "moduleResolution": "node",
-    "sourceMap": true,
-  }
+    "sourceMap": true
+  },
+    "include": [
+      "src/**/*",
+      "declarations.d.ts"
+    ]
 }
